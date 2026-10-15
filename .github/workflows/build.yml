@@ -1,14 +1,20 @@
-name: Build Android APK
+name: Build V25 FPS Booster APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Download Source Code
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -17,17 +23,20 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build APK
-        run: |
-          echo "Android project abhi add karna baaki hai."
-          mkdir -p output
-          echo "Yeh placeholder hai, asli APK nahi." > output/README.txt
+      - name: Build Debug APK
+        run: gradle assembleDebug
 
-      - name: Upload build files
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: build-files
-          path: output/
+          name: V25-FPS-Booster-APK
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
